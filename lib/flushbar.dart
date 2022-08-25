@@ -60,7 +60,8 @@ class Flushbar<T> extends StatefulWidget {
       this.routeColor,
       this.userInputForm,
       this.endOffset,
-      this.flushbarRoute // Please dont init this
+      this.flushbarRoute, // Please dont init this
+      this.useSafeArea = true,
       })
       // ignore: prefer_initializing_formals
       : onStatusChanged = onStatusChanged,
@@ -220,6 +221,10 @@ class Flushbar<T> extends StatefulWidget {
   /// Offset to be added to the end Flushbar position.
   /// Intended to replace [margin] when you need items below Flushbar to be accessible
   final Offset? endOffset;
+
+  // Disables the safe area for the Flushbar
+  // Will use SafeArea as default
+  final bool useSafeArea;
 
   route.FlushbarRoute<T?>? flushbarRoute;
 
@@ -398,18 +403,23 @@ class _FlushbarState<K extends Object?> extends State<Flushbar<K>>
         color: widget.flushbarStyle == FlushbarStyle.FLOATING
             ? Colors.transparent
             : widget.backgroundColor,
-        child: SafeArea(
+        child: widget.useSafeArea ? SafeArea(
           minimum: widget.flushbarPosition == FlushbarPosition.BOTTOM
-          ? EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom + widget.positionOffset)
-          : EdgeInsets.only(
-              top: MediaQuery.of(context).viewInsets.top + widget.positionOffset),
+              ? EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom)
+              : EdgeInsets.only(top: MediaQuery.of(context).viewInsets.top),
+          // ? EdgeInsets.only(
+          //     bottom: (MediaQuery.of(context).padding.bottom +
+          //         widget.positionOffset))
+          // : EdgeInsets.only(
+          //     top: (MediaQuery.of(context).padding.top) +
+          //         widget.positionOffset),
           bottom: widget.flushbarPosition == FlushbarPosition.BOTTOM,
           top: widget.flushbarPosition == FlushbarPosition.TOP,
           left: false,
           right: false,
           child: _getFlushbar(),
-        ),
+        ) : _getFlushbar()
       ),
     );
   }
